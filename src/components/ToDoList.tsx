@@ -1,5 +1,7 @@
 export default function ToDoList() {
     return (
-        <div>I'm the ToDo list</div>
+        <div className="flex flex-col items-center">
+            <div>I'm the ToDo list</div>
+        </div>
     )
 }
