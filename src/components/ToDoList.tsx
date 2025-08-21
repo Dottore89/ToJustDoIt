@@ -4,30 +4,32 @@ import { v4 as uuidv4 } from 'uuid'
 
 
 export default function Title() {
+    // Array para almacenar las tareas
     const [tasksArr, setTasksArr] = useState([])
+
+    // Estado [¿estoy añadiendo una tarea en este momento?]
     const [addingTask, setAddingTask] = useState(false)
 
+    // Referencia a elemento input del DOM (TypeScript) valor inicial "null"
     const inputRef = useRef<HTMLInputElement>(null)
 
+    // Si addingTask es true y el inputRef existe en el DOM, ocurre el focus sobre este último
     useEffect(() => {
         if(addingTask && inputRef.current) {
             inputRef.current.focus()
         }
     }, [addingTask])
 
+    // Generar y devolver un color random para las tarjetas
     function getRandomColor() {
         const colors = ['bg-green-500', 'bg-yellow-300', 'bg-red-500', 'bg-blue-500']
         const randomNumber = Math.floor(Math.random() * 4)
         return colors[randomNumber]
     }
 
-    console.log(getRandomColor())
-
     function handleKeyDown(e) {
         if(e.key === 'Enter') {
             const value = (e.target as HTMLInputElement).value
-            const valor = inputRef.current?.value
-            const randomColor:number = Math.floor(Math.random() * 6)
 
             setTasksArr(prev => [
                 ...prev,
