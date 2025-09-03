@@ -4,8 +4,15 @@ import { v4 as uuidv4 } from 'uuid'
 
 
 export default function Title() {
+    // Type (ts) para la tarea
+    type Task = {
+        id: string
+        text: string
+        color: string
+    }
+
     // Array para almacenar las tareas
-    const [tasksArr, setTasksArr] = useState([])
+    const [tasksArr, setTasksArr] = useState<Task[] | []>([])
 
     // Estado [¿estoy añadiendo una tarea en este momento?]
     const [addingTask, setAddingTask] = useState(false)
@@ -27,9 +34,10 @@ export default function Title() {
         return colors[randomNumber]
     }
 
-    function handleKeyDown(e) {
+
+    function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
         if(e.key === 'Enter') {
-            const value = (e.target as HTMLInputElement).value
+            let value = (e.target as HTMLInputElement).value
 
             setTasksArr(prev => [
                 ...prev,
@@ -40,18 +48,12 @@ export default function Title() {
                 }
             ])
 
-            if(inputRef.current) {
-                inputRef.current.value = ''
+            if (inputRef.current) {
+                inputRef.current.value = '';
             }
 
             // Ahora seguimos con lo siguiente:
             // Dentro de ese if, tienes que:
-
-            // Conseguir el valor actual del input (¿cómo lo obtendrías? ¿De dónde?).
-
-            // Añadir ese valor al array tasksArr usando setTasksArr (recuerda, nunca modificar directamente el estado con .push).
-
-            // Limpiar el input para dejarlo listo para la siguiente tarea.
 
             // (Opcional) Cerrar el input poniendo setAddingTask(false).
 
@@ -59,12 +61,6 @@ export default function Title() {
             // ¿Cómo harías para leer el valor del input dentro de handleKeyDown?
             // ¿Tienes alguna idea de cómo capturarlo o necesitas que te oriente?
         }
-    }
-
-    function addTask() {
-        //input name of task
-        //add task to tasksArr
-        //render task into ToDo list
     }
 
     function removeTask() {
