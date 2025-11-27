@@ -1,25 +1,31 @@
 import { Plus } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid'
+import { db } from '../../firebaseConfig'
+import { addDoc, collection, FieldValue, serverTimestamp, onSnapshot, query, orderBy } from 'firebase/firestore'
 
 
 export default function Title() {
-    // Type (ts) para la tarea
+    /*/ Types /*/
     type Task = {
         id: string
         text: string
         color: string
+        createdAt: FieldValue
     }
 
+    /*/ States /*/
     // Array para almacenar las tareas
     const [tasksArr, setTasksArr] = useState<Task[] | []>([])
 
     // Estado [¿estoy añadiendo una tarea en este momento?]
     const [addingTask, setAddingTask] = useState(false)
 
+    /*/ Refs /*/
     // Referencia a elemento input del DOM (TypeScript) valor inicial "null"
     const inputRef = useRef<HTMLInputElement>(null)
 
+    /*/ useEffects /*/
     // Si addingTask es true y el inputRef existe en el DOM, ocurre el focus sobre este último
     useEffect(() => {
         if(addingTask && inputRef.current) {
@@ -27,6 +33,22 @@ export default function Title() {
         }
     }, [addingTask])
 
+    // Leer las tareas en la base de datos una sola vez al montar el componente y añadirlas a tasksArr (onSnapshot)
+    // usamos orderBy para ordenar el query por "createdAt", "desc"
+    useEffect(() => {
+        const q = query(collection(db, "tasks"), orderBy("createdAt", "desc"))
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const tasksData = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+            })) as Task[]
+            setTasksArr(tasksData)
+        })
+
+        return () => unsubscribe()
+    }, [])
+
+    /*/ Functions /*/
     // Generar y devolver un color random para las tarjetas
     function getRandomColor() {
         const colors = ['bg-green-500', 'bg-yellow-300', 'bg-red-500', 'bg-blue-500']
@@ -34,35 +56,32 @@ export default function Title() {
         return colors[randomNumber]
     }
 
-
-    function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    // Crear el objeto task y guardarlo en firestore con addDoc()
+    async function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
         if(e.key === 'Enter') {
-            let value = (e.target as HTMLInputElement).value
+            const value = (e.target as HTMLInputElement).value.trim()
 
-            setTasksArr(prev => [
-                ...prev,
-                {
-                    id: uuidv4(),
-                    text: value,
-                    color: getRandomColor()
-                }
-            ])
+            const newTask: Task = {
+                id: uuidv4(),
+                text: value,
+                color: getRandomColor(),
+                createdAt: serverTimestamp()
+            }
 
+            // Guardar en Firestore
+            await addDoc(collection(db, "tasks"), newTask)
+
+            // Actualizar estado local
+            setTasksArr(prev => [...prev, newTask])
+
+            // Limpiar input
             if (inputRef.current) {
                 inputRef.current.value = '';
             }
-
-            // Ahora seguimos con lo siguiente:
-            // Dentro de ese if, tienes que:
-
-            // (Opcional) Cerrar el input poniendo setAddingTask(false).
-
-            // Pregunta para ti:
-            // ¿Cómo harías para leer el valor del input dentro de handleKeyDown?
-            // ¿Tienes alguna idea de cómo capturarlo o necesitas que te oriente?
         }
     }
 
+    // Pendiente
     function removeTask() {
         //
     }
@@ -71,6 +90,7 @@ export default function Title() {
         <div className={`px-42 py-8 w-5/6 h-24 cursor-pointer rounded-2xl font-semibold shadow-lg hover:bg-orange-400 hover:text-red-500 transition-all duration-300 ease-in-out hover:scale-105 hover:font-extrabold flex justify-center items-center capitalize ${task.color}`}>{task.text}</div>
     ))
 
+    /*/ Render /*/
     return (
         <>
             <div className="flex gap-4 justify-center items-center my-8">
