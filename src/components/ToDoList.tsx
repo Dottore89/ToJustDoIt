@@ -140,7 +140,17 @@ export default function Title() {
 // Solo crear la función y verificar en Firestore que se añade.
 // Cuando acabes este ejercicio, me dices “ejercicio 1 hecho” y te doy el ejercicio 2, que será practicar onSnapshot() por separado.
 
-function addNote(text:string) {
+function addNote(text: string) {
+    const note = {
+        text: text,
+        createdAt: serverTimestamp(),
+        id: uuidv4()
+    }
+    addDoc(collection(db, "notes"), note)
+}
+
+addNote('funciona')
+
 // ✔️ Requisitos mínimos
 
 // La función debe recibir un texto como parámetro.
@@ -164,16 +174,3 @@ function addNote(text:string) {
 // Cuando acabes este ejercicio, me dices “ejercicio 1 hecho” y te doy el ejercicio 2, que será practicar onSnapshot() por separado.
 
 // ¿Listo?
-
-function addNote(text: string) {
-    const note = {
-        text: text,
-        createdAt: serverTimestamp(),
-        id: uuidv4()
-    }
-    addDoc(collection(db, "notes"), note)
-}
-
-addNote('ayyy lmao')
-    await addDoc(collection(db, "notes"), note)
-}
