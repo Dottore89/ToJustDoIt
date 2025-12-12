@@ -121,3 +121,33 @@ export default function Title() {
         </>
     )
 }
+
+// 🔥 EJERCICIO 1 — Practicar addDoc() + collection()
+
+// Objetivo:
+// Crear una función independiente que añada una “nota” a una colección “notes” en Firestore.
+// (No es una task, es otra colección distinta para practicar).
+
+// La función debe recibir un texto como parámetro.
+
+// Debe generar un objeto con:
+// text
+// createdAt: serverTimestamp()
+// id: uuidv4()
+
+// Debe hacer addDoc(collection(...), objeto)
+// Debes llamarla manualmente (por ejemplo, con un botón de prueba).
+// ❗ No necesitas mostrar nada en pantalla aún.
+// Solo crear la función y verificar en Firestore que se añade.
+// Cuando acabes este ejercicio, me dices “ejercicio 1 hecho” y te doy el ejercicio 2, que será practicar onSnapshot() por separado.
+
+function addNote(text:string) {
+    const note = {
+        text: text,
+        createdAt: serverTimestamp(),
+        id: uuidv4()
+    }
+    addDoc(collection(db, "notes"), note)
+}
+
+addNote('ayyy lmao')
