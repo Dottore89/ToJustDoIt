@@ -128,6 +128,7 @@ export default function Title() {
 // Crear una función independiente que añada una “nota” a una colección “notes” en Firestore.
 // (No es una task, es otra colección distinta para practicar).
 
+<<<<<<< Updated upstream
 // La función debe recibir un texto como parámetro.
 
 // Debe generar un objeto con:
@@ -142,12 +143,46 @@ export default function Title() {
 // Cuando acabes este ejercicio, me dices “ejercicio 1 hecho” y te doy el ejercicio 2, que será practicar onSnapshot() por separado.
 
 function addNote(text:string) {
+=======
+// ✔️ Requisitos mínimos
+
+// La función debe recibir un texto como parámetro.
+
+// Debe generar un objeto con:
+
+// text
+
+// createdAt: serverTimestamp()
+
+// id: uuidv4()
+
+// Debe hacer addDoc(collection(...), objeto)
+
+// Debes llamarla manualmente (por ejemplo, con un botón de prueba).
+
+// ❗ No necesitas mostrar nada en pantalla aún.
+
+// Solo crear la función y verificar en Firestore que se añade.
+
+// Cuando acabes este ejercicio, me dices “ejercicio 1 hecho” y te doy el ejercicio 2, que será practicar onSnapshot() por separado.
+
+// ¿Listo?
+
+function addNote(text: string) {
+>>>>>>> Stashed changes
     const note = {
         text: text,
         createdAt: serverTimestamp(),
         id: uuidv4()
     }
+<<<<<<< Updated upstream
     addDoc(collection(db, "notes"), note)
 }
 
 addNote('ayyy lmao')
+=======
+    await addDoc(collection(db, "notes"), note)
+}
+
+addNote("Funciona!")
+>>>>>>> Stashed changes
