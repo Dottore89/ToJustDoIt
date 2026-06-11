@@ -1,5 +1,5 @@
-import { Plus } from 'lucide-react'
-import { useState, useRef, useEffect } from 'react'
+import { Plus, Trash2 } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { db } from '../../firebaseConfig'
 import { addDoc, collection, FieldValue, serverTimestamp, onSnapshot, query, orderBy } from 'firebase/firestore'
@@ -21,15 +21,19 @@ export default function Title() {
     // Estado [¿estoy añadiendo una tarea en este momento?]
     const [addingTask, setAddingTask] = useState(false)
 
-    /*/ Refs /*/
-    // Referencia a elemento input del DOM (TypeScript) valor inicial "null"
     const inputRef = useRef<HTMLInputElement>(null)
+
+    // Valor del input
+    const [inputValue, setInputValue] = useState("")
 
     /*/ useEffects /*/
     // Si addingTask es true y el inputRef existe en el DOM, ocurre el focus sobre este último
     useEffect(() => {
-        if(addingTask && inputRef.current) {
-            inputRef.current.focus()
+        if (addingTask) {
+            setTimeout(() => {
+                const input = document.querySelector("input")
+                if (input) input.focus()
+            }, 0)
         }
     }, [addingTask])
 
@@ -51,15 +55,29 @@ export default function Title() {
     /*/ Functions /*/
     // Generar y devolver un color random para las tarjetas
     function getRandomColor() {
-        const colors = ['bg-green-500', 'bg-yellow-300', 'bg-red-500', 'bg-blue-500']
-        const randomNumber = Math.floor(Math.random() * 4)
+        const colors = [
+  'bg-green-500',
+  'bg-yellow-300',
+  'bg-red-500',
+  'bg-blue-500',
+  'bg-purple-500',
+  'bg-pink-500',
+  'bg-indigo-500',
+  'bg-orange-500',
+  'bg-teal-500',
+  'bg-emerald-500',
+  'bg-cyan-500',
+  'bg-rose-500'
+]
+        const randomNumber = Math.floor(Math.random() * 12)
         return colors[randomNumber]
     }
 
     // Crear el objeto task y guardarlo en firestore con addDoc()
     async function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
         if(e.key === 'Enter') {
-            const value = (e.target as HTMLInputElement).value.trim()
+            const value = inputValue.trim()
+            if(!value) return
 
             const newTask: Task = {
                 id: uuidv4(),
@@ -72,22 +90,29 @@ export default function Title() {
             await addDoc(collection(db, "tasks"), newTask)
 
             // Actualizar estado local
-            setTasksArr(prev => [...prev, newTask])
-
-            // Limpiar input
-            if (inputRef.current) {
-                inputRef.current.value = '';
-            }
+            setInputValue("")
         }
     }
 
-    // Pendiente
-    function removeTask() {
-        //
-    }
-
     const tasksElement = tasksArr.map(task => (
-        <div className={`px-42 py-8 w-5/6 h-24 cursor-pointer rounded-2xl font-semibold shadow-lg hover:bg-orange-400 hover:text-red-500 transition-all duration-300 ease-in-out hover:scale-105 hover:font-extrabold flex justify-center items-center capitalize ${task.color}`}>{task.text}</div>
+        <div
+            className={`
+                px-42 py-8 w-5/6 h-24 relative
+                flex justify-center items-center gap-4
+                cursor-pointer rounded-2xl shadow-lg
+                font-semibold capitalize
+                transition-all duration-300 ease-in-out
+                hover:bg-orange-400 hover:text-red-500
+                hover:scale-105 hover:font-extrabold
+                ${task.color}
+            `}
+        >
+            <span>{task.text}</span>
+            <Trash2
+                size={50}
+                className="absolute right-4"
+             />
+        </div>
     ))
 
     /*/ Render /*/
@@ -108,10 +133,12 @@ export default function Title() {
             {addingTask ?
                 <div className='flex justify-center mt-12 fixed bottom-10 transform -translate-x-1/2 left-1/2 text-2xl md:text-3xl lg:text-4xl'>
                     <input
-                        type='text' 
-                        placeholder='Add task...'
+                        type='text'
                         ref={inputRef}
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
                         onKeyDown={handleKeyDown}
+                        placeholder='Add task...'
                         className='bg-[#F5EBDD] shadow-2xl rounded-md py-4 px-8 focus:outline-none focus:ring-2 focus:ring-yellow-400' 
                     />
                 </div>
@@ -121,56 +148,3 @@ export default function Title() {
         </>
     )
 }
-
-// 🔥 EJERCICIO 1 — Practicar addDoc() + collection()
-
-// Objetivo:
-// Crear una función independiente que añada una “nota” a una colección “notes” en Firestore.
-// (No es una task, es otra colección distinta para practicar).
-// La función debe recibir un texto como parámetro.
-
-// Debe generar un objeto con:
-// text
-// createdAt: serverTimestamp()
-// id: uuidv4()
-
-// Debe hacer addDoc(collection(...), objeto)
-// Debes llamarla manualmente (por ejemplo, con un botón de prueba).
-// ❗ No necesitas mostrar nada en pantalla aún.
-// Solo crear la función y verificar en Firestore que se añade.
-// Cuando acabes este ejercicio, me dices “ejercicio 1 hecho” y te doy el ejercicio 2, que será practicar onSnapshot() por separado.
-
-function addNote(text: string) {
-    const note = {
-        text: text,
-        createdAt: serverTimestamp(),
-        id: uuidv4()
-    }
-    addDoc(collection(db, "notes"), note)
-}
-
-addNote('funciona')
-
-// ✔️ Requisitos mínimos
-
-// La función debe recibir un texto como parámetro.
-
-// Debe generar un objeto con:
-
-// text
-
-// createdAt: serverTimestamp()
-
-// id: uuidv4()
-
-// Debe hacer addDoc(collection(...), objeto)
-
-// Debes llamarla manualmente (por ejemplo, con un botón de prueba).
-
-// ❗ No necesitas mostrar nada en pantalla aún.
-
-// Solo crear la función y verificar en Firestore que se añade.
-
-// Cuando acabes este ejercicio, me dices “ejercicio 1 hecho” y te doy el ejercicio 2, que será practicar onSnapshot() por separado.
-
-// ¿Listo?
