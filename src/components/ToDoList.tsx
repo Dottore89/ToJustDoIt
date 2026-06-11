@@ -93,8 +93,12 @@ export default function Title() {
             setInputValue("")
         }
     }
-
+            //POR AQUÍ
     const tasksElement = tasksArr.map(task => (
+        function deleteTask(task.id) {
+
+        }
+
         <div
             className={`
                 px-42 py-8 w-5/6 h-24 relative
@@ -111,6 +115,7 @@ export default function Title() {
             <Trash2
                 size={50}
                 className="absolute right-4"
+                onClick={}
              />
         </div>
     ))
