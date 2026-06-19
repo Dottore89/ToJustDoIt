@@ -2,7 +2,7 @@ import { Plus, Trash2 } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { db } from '../../firebaseConfig'
-import { addDoc, collection, FieldValue, serverTimestamp, onSnapshot, query, orderBy } from 'firebase/firestore'
+import { addDoc, collection, FieldValue, serverTimestamp, onSnapshot, query, orderBy, doc, deleteDoc } from 'firebase/firestore'
 
 
 export default function Title() {
@@ -53,6 +53,14 @@ export default function Title() {
     }, [])
 
     /*/ Functions /*/
+
+    // Borrar tarea al hacer click en TrashIcon
+    function deleteTask(id: string) {
+        console.log(id)
+        const taskRef = doc(db, "tasks", id)
+        deleteDoc(taskRef)
+    }
+
     // Generar y devolver un color random para las tarjetas
     function getRandomColor() {
         const colors = [
@@ -95,10 +103,6 @@ export default function Title() {
     }
             //POR AQUÍ
     const tasksElement = tasksArr.map(task => (
-        function deleteTask(task.id) {
-
-        }
-
         <div
             className={`
                 px-42 py-8 w-5/6 h-24 relative
@@ -115,7 +119,7 @@ export default function Title() {
             <Trash2
                 size={50}
                 className="absolute right-4"
-                onClick={}
+                onClick={() => deleteTask(task.id)}
              />
         </div>
     ))
